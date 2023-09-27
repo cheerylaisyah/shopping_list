@@ -1,48 +1,86 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Shopping List Page</h1>
+    <nav class="navbar navbar-expand-lg" style="background-color: #e2cdff;">
+        <div class="container-fluid">
+        <a class="navbar-brand" href="#"><h1>Shopping List</h1></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Inventory</a>
+            </li>
+            </ul>
 
-    <h5>Name:</h5>
-    <p>{{name}}</p>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success me-2" type="submit">Search</button>
+            </form>
 
-    <h5>Class:</h5>
-    <p>{{class}}</p>
+        <div class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                User Profile
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
+                <li><a class="dropdown-item" aria-disabled="true">{{name}}</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'main:logout' %}">Logout</a></li>
+            </ul>
+        </div>
+        </div>
+        </div>
+    </nav>
+  
+    <h3 align="center">Shopping List Page</h3>
+    
+    <div align="center">
+        <table class="table table-responsive" style="border: 1px solid #ddd;">
+            <thead>
+                <tr align="center">
+                    <th style="border-right: 1px solid #ddd;">Name</th>
+                    <th style="border-right: 1px solid #ddd;">Price</th>
+                    <th style="border-right: 1px solid #ddd;">Description</th>
+                    <th style="border-right: 1px solid #ddd;">Date Added</th>
+                    <th style="border-right: 1px solid #ddd;">Action</th>
+                </tr>
+            </thead>
+            {% comment %} Berikut cara memperlihatkan data produk di bawah baris ini {% endcomment %}
 
-...
-<table>
-    <tr>
-        <th>Name</th>
-        <th>Price</th>
-        <th>Description</th>
-        <th>Date Added</th>
-    </tr>
+            {% for product in products %}
+                <tr>
+                    <td style="border-right: 1px solid #ddd;">{{product.name}}</td>
+                    <td align='center' style="border-right: 1px solid #ddd;">Rp{{product.price}}</td>
+                    <td style="border-right: 1px solid #ddd;">{{product.description}}</td>
+                    <td align='center' style="border-right: 1px solid #ddd;">{{product.date_added}}</td>
+                    <td align='center'>
+                        <a href="{% url 'main:edit_product' product.pk %}">
+                            <button>
+                                Edit
+                            </button>
+                        </a>
+                        <a href="{% url 'main:delete_product' product.pk %}">
+                            <button>
+                                Delete
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
 
-    {% comment %} Berikut cara memperlihatkan data produk di bawah baris ini {% endcomment %}
+        <br />
 
-    {% for product in products %}
-        <tr>
-            <td>{{product.name}}</td>
-            <td>{{product.price}}</td>
-            <td>{{product.description}}</td>
-            <td>{{product.date_added}}</td>
-        </tr>
-    {% endfor %}
-</table>
-
-<br />
-
-<!-- make button and linked to create_product.html  -->
-<a href="{% url 'main:create_product' %}">
-    <button>
-        Add New Product
-    </button>
-</a>
-<h5>Sesi terakhir login: {{ last_login }}</h5>
-<a href="{% url 'main:logout' %}">
-    <button>
-        Logout
-    </button>
-</a>
-
+        <!-- make button and linked to create_product.html  -->
+        <a href="{% url 'main:create_product' %}">
+            <button>
+                Add New Product
+            </button>
+        </a>
+        <h5>Sesi terakhir login: {{ last_login }}</h5>
+    </div>
 {% endblock content %}

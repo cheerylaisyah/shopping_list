@@ -51,6 +51,11 @@ def logout_user(request):
 def show_main(request):
     products = Product.objects.filter(user=request.user)
 
+    if 'last_login' in request.COOKIES:
+        last_login = request.COOKIES['last_login']
+    else:
+        last_login = 'N/A'
+
     context = {
         'name': request.user.username,
         'class': 'PBP C',

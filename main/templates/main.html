@@ -1,86 +1,117 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <nav class="navbar navbar-expand-lg" style="background-color: #e2cdff;">
-        <div class="container-fluid">
-        <a class="navbar-brand" href="#"><h1>Shopping List</h1></a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Inventory</a>
-            </li>
-            </ul>
+<nav class="navbar navbar-expand-lg" style="background-color: #e2cdff;">
+    <div class="container-fluid">
+    <a class="navbar-brand" href="#"><h1>Shopping List</h1></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Inventory</a>
+        </li>
+        </ul>
 
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success me-2" type="submit">Search</button>
-            </form>
+        <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success me-2" type="submit">Search</button>
+        </form>
 
-        <div class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="userProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                User Profile
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
-                <li><a class="dropdown-item" aria-disabled="true">{{name}}</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="{% url 'main:logout' %}">Logout</a></li>
-            </ul>
-        </div>
-        </div>
-        </div>
-    </nav>
-  
-    <h3 align="center">Shopping List Page</h3>
-    
-    <div align="center">
-        <table class="table table-responsive" style="border: 1px solid #ddd;">
-            <thead>
-                <tr align="center">
-                    <th style="border-right: 1px solid #ddd;">Name</th>
-                    <th style="border-right: 1px solid #ddd;">Price</th>
-                    <th style="border-right: 1px solid #ddd;">Description</th>
-                    <th style="border-right: 1px solid #ddd;">Date Added</th>
-                    <th style="border-right: 1px solid #ddd;">Action</th>
-                </tr>
-            </thead>
-            {% comment %} Berikut cara memperlihatkan data produk di bawah baris ini {% endcomment %}
-
-            {% for product in products %}
-                <tr>
-                    <td style="border-right: 1px solid #ddd;">{{product.name}}</td>
-                    <td align='center' style="border-right: 1px solid #ddd;">Rp{{product.price}}</td>
-                    <td style="border-right: 1px solid #ddd;">{{product.description}}</td>
-                    <td align='center' style="border-right: 1px solid #ddd;">{{product.date_added}}</td>
-                    <td align='center'>
-                        <a href="{% url 'main:edit_product' product.pk %}">
-                            <button>
-                                Edit
-                            </button>
-                        </a>
-                        <a href="{% url 'main:delete_product' product.pk %}">
-                            <button>
-                                Delete
-                            </button>
-                        </a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-
-        <br />
-
-        <!-- make button and linked to create_product.html  -->
-        <a href="{% url 'main:create_product' %}">
-            <button>
-                Add New Product
-            </button>
+    <div class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="userProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            User Profile
         </a>
-        <h5>Sesi terakhir login: {{ last_login }}</h5>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
+            <li><a class="dropdown-item" aria-disabled="true" style="font-weight: bold;">{{name}}</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'main:logout' %}" style="color: #b80000">Logout</a></li>
+        </ul>
     </div>
+    </div>
+    </div>
+</nav>
+
+<h3 align="center">Shopping List Page</h3>
+
+<div align="center">
+    <table id="product_table"></table>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add New Product</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form" onsubmit="return false;">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="name" class="col-form-label">Name:</label>
+                            <input type="text" class="form-control" id="name" name="name" autocomplete="off"></input>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="col-form-label">Price:</label>
+                            <input type="number" class="form-control" id="price" name="price" autocomplete="off"></input>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="col-form-label">Description:</label>
+                            <textarea class="form-control" id="description" name="description" autocomplete="off"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="button_add" data-bs-dismiss="modal">Add Product</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" style="margin-top: 10px;">Add Product by AJAX</button>
+    <h5 style="margin-top: 15px; font-size: 16px;">Sesi terakhir login: {{ last_login }}</h5>
+</div>
+
+<script>
+    async function getProducts() {
+        return fetch("{% url 'main:get_product_json' %}").then((res) => res.json())
+    }
+    async function refreshProducts() {
+        document.getElementById("product_table").innerHTML = ""
+        const products = await getProducts()
+        let htmlString = `<tr class="text-center">
+            <th>Name</th>
+            <th>Price</th>
+            <th>Description</th>
+            <th>Date Added</th>
+            <th colspan = 2>Actions</th>
+        </tr>`
+        products.forEach((item) => {
+            htmlString += `\n<tr>
+            <td>${item.fields.name}</td>
+            <td>Rp${item.fields.price}</td>
+            <td>${item.fields.description}</td>
+            <td>${item.fields.date_added}</td>
+            <td><a href="edit-product/${item.pk}"><button>Edit</button></a></td>
+            <td><a href="delete_product/${item.pk}"><button>Delete</button></a></td>
+        </tr>` 
+        })
+        
+        document.getElementById("product_table").innerHTML = htmlString
+    }
+    refreshProducts()
+    function addProduct() {
+        fetch("{% url 'main:add_product_ajax' %}", {
+            method: "POST",
+            body: new FormData(document.querySelector('#form'))
+        }).then(refreshProducts)
+
+        document.getElementById("form").reset()
+        return false
+    }
+    document.getElementById("button_add").onclick = addProduct
+</script>
 {% endblock content %}
